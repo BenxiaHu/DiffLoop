@@ -11,6 +11,7 @@ usage: GetCount_multiplesamples.py [-h] -I INPUTPATH -i INPUT -l LOOPFILE -O OUT
 Build loop raw count and normalization factor matrices from mcool and expected files.
 
 options:
+|:----:|:-----:|:----:|:------:|:------:|  
 | -h | --help | show this help message and exit |
 | -I | INPUTPATH | --inputpath | INPUTPATH Directory containing the samples |
 | -i | INPUT | --input | INPUT Sample filename (tab-separated with columns: sample, mcool_path, resolution, expected_path) |
@@ -25,6 +26,7 @@ usage:
 ``` Rscript EPloop_DESeq2.R --Pathid "input and output file path" --Rawcounts "EPloop_rawcounts.txt" --Normalization "EPloop_normalizationFactor.txt" --Treatid LPS --Ctrlid Control --Treatnum 2 --Ctrlnum 2 --outfile LPS_vs_Control --log2FC 1 --padj 0.05 ```
 
 options:
+|:----:|:------:|  
 | --Pathid | Pathway of input and output files |
 | --Rawcounts | row-count matrix |
 | --Normalization | Size-factor file |
