@@ -7,15 +7,15 @@ library(optparse)
 
 option_list <- list(
     make_option("--Pathid", type = "character"),
-    make_option("--Rawcounts", type = "integer"),
-    make_option("--Normalization", type = "integer"),
+    make_option("--Rawcounts", type = "character"),
+    make_option("--Normalization", type = "character"),
     make_option("--Treatid", type = "character"),
     make_option("--Ctrlid", type = "character"),
     make_option("--Treatnum", type = "integer"),
     make_option("--Ctrlnum", type = "integer"),
     make_option("--outfile", type = "character"),
-    make_option("--log2FC", type = "integer"),
-    make_option("--padj", type = "integer"),
+    make_option("--log2FC", type = "double", default = 1),
+    make_option("--padj", type = "double", default = 0.05)
 )
 
 opt <- parse_args(OptionParser(option_list = option_list))
