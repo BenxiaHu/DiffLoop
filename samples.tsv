@@ -1,0 +1,5 @@
+sample	mcool_path	resolution	expected_path
+Control_rep1	Control_rep1.mcool	5000	Control_rep1_5kb_expected.tsv
+Control_rep2	Control_rep2.mcool	5000	Control_rep2_5kb_expected.tsv
+LPS_rep1	LPS_rep1.mcool	5000	LPS_rep1_5kb_expected.tsv
+LPS_rep2	LPS_rep2.mcool	5000	LPS_rep2_5kb_expected.tsv
