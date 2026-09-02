@@ -1,0 +1,21 @@
+name: diffloop
+
+channels:
+  - conda-forge
+  - bioconda
+
+dependencies:
+  - python>=3.9
+  - numpy
+  - pandas
+  - cooler
+
+  - r-base
+  - bioconductor-deseq2
+  - r-tidyr
+  - r-ggplot2
+  - r-optparse
+  - r-writexl
+
+  - pip
+  

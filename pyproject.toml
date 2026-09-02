@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "diffloop"
+version = "0.1.0"
+description = "Differential chromatin loop analysis from Hi-C contact matrices"
+readme = "README.md"
+requires-python = ">=3.9"
+
+dependencies = [
+    "numpy",
+    "pandas",
+    "cooler"
+]
+
+[project.scripts]
+DiffLoop = "diffloop.cli:main"
+
+[tool.setuptools.package-data]
+diffloop = ["r/*.R"]
