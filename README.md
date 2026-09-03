@@ -97,8 +97,8 @@ chrom1    chrom2    dist_bp    count.avg
 
 ```bash
 DiffLoop run \
-    --samples examples/samples.tsv \
-    --loops loops.bedpe \
+    --inputfile examples/samples.tsv \
+    --loopfile loops.bedpe \
     --treatment LPS \
     --control Control \
     --treatnum 2 \
@@ -121,9 +121,8 @@ Users do not need to run `counts.py` or `deseq2.R` directly.
 | Option | Description |
 | --- | --- |
 | `--help` | Show the help message and exit |
-| `--inputpath` |  Directory containing the input files |
-| `--input` | Sample information file (tab-separated columns: `sample`, `mcool_path`, `resolution`, `expected_path`) |
-| `--loops` | BEDPE-like chromatin loop file |
+| `--inputfile` | Sample information file (tab-separated columns: `sample`, `mcool_path`, `resolution`, `expected_path`) |
+| `--loopfile` | BEDPE-like chromatin loop file |
 | `--Treatid` | Treatment sample prefix |
 | `--Ctrlid` | Control sample prefix |
 | `--Treatnum` | Number of treatment replicates |
@@ -182,8 +181,8 @@ Major dependencies include:
 conda activate diffloop
 
 DiffLoop run \
-    --samples examples/samples.tsv \
-    --loops merged_loops.bedpe \
+    --inputfile examples/samples.tsv \
+    --loopfile merged_loops.bedpe \
     --treatment LPS \
     --control Control \
     --treatnum 2 \

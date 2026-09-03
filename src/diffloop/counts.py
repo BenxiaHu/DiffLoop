@@ -4,6 +4,13 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import cooler
+import os
+import sys, getopt
+import os.path
+
+dir = os.path.dirname(__file__)
+version_py = os.path.join(dir, "_version.py")
+exec(open(version_py).read())
 
 # ---------------------------- helpers ----------------------------
 
@@ -34,7 +41,7 @@ def load_loops(loopfile):
         'chrom1': 'chrom2', 'start1': 'start2', 'end1': 'end2',
         'chrom2': 'chrom1', 'start2': 'start1', 'end2': 'end1'
     })
-    loops_all = pd.concat([loops, sw], ignore_index=True)
+    loops_all = (pd.concat([loops, sw], ignore_index=True).drop_duplicates().reset_index(drop=True))
 
     can = loops_all.apply(canon_pair, axis=1, result_type='expand')
     can.columns = ["c1", "s1", "e1", "c2", "s2", "e2"]
@@ -169,35 +176,11 @@ def write_matrices(counts_df, nf_df, out_dir, out_prefix):
     return counts_path, nf_path
 
 
-def get_count(samples_path, loopfile, outpath, outfile):
-    """Run the counting workflow from another Python module/tool.
-
-    Parameters
-    ----------
-    samples_path : str or Path
-        TSV file with columns: sample, mcool_path, resolution, expected_path.
-    loopfile : str or Path
-        BEDPE-like loop file.
-    outpath : str or Path
-        Output directory.
-    outfile : str
-        Output prefix.
-
-    Returns
-    -------
-    tuple[Path, Path]
-        Raw-count file and normalization-factor file.
-    """
+def get_count(inputfile,loopfile, outpath, outfile):
     loops_all, meta = load_loops(loopfile)
-    man = read_manifest(samples_path)
+    man = read_manifest(inputfile)
     counts_df, nf_df = build_matrices(man, loops_all, meta)
     return write_matrices(counts_df, nf_df, outpath, outfile)
-
-
-def GetCount(inputpath, filename, loopfile, outpath, outfile):
-    """Backward-compatible wrapper for the original interface."""
-    samples_path = Path(inputpath) / filename
-    return get_count(samples_path, loopfile, outpath, outfile)
 
 # ---------------------------- CLI ----------------------------
 
@@ -205,9 +188,7 @@ def main():
     parser = argparse.ArgumentParser(
         description="Build loop raw count and normalization factor matrices from mcool and expected files."
     )
-    parser.add_argument('-I', '--inputpath', dest='inputpath', required=True,
-                        help='Directory containing the samples')
-    parser.add_argument('-i', '--input', dest='input', required=True,
+    parser.add_argument('-i', '--inputfile', dest='inputfile', required=True,
                         help='Sample filename (tab-separated with columns: sample, mcool_path, resolution, expected_path)')
     parser.add_argument('-l', '--loopfile', dest='loopfile', required=True,
                         help='Loop file with BIN1_*/BIN2_* columns')
@@ -215,13 +196,14 @@ def main():
                         help='Output directory')
     parser.add_argument('-o', '--outfile', dest='outfile', required=True,
                         help='Output prefix (no extension) for the two result files')
-
+    parser.add_argument("-V", "--version", action="version",version="DiffLoop {}".format(__version__)\
+                      ,help="Print version and exit")
     args = parser.parse_args()
-    print('### Parameters:')
+    print('###Parameters:')
     print(args)
-    print('### Starting')
+    print('###Parameters')
 
-    get_count(Path(args.inputpath) / args.input, args.loopfile, args.outpath, args.outfile)
+    get_count(args.inputfile, args.loopfile, args.outpath, args.outfile)
 
 if __name__ == "__main__":
     main()

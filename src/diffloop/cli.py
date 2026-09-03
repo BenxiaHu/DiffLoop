@@ -2,7 +2,8 @@ import argparse
 from pathlib import Path
 import subprocess
 
-from diffloop.counts import run_counting
+from diffloop.count import get_count
+from diffloop._version import __version__
 
 
 def run_deseq2(
@@ -12,29 +13,24 @@ def run_deseq2(
     control,
     treatnum,
     ctrlnum,
-    outdir,
-    prefix,
+    outpath,
+    outfile,
     log2fc,
     padj
 ):
-
-    rscript = (
-        Path(__file__).parent /
-        "r" /
-        "deseq2.R"
-    )
+    rscript = Path(__file__).parent / "r" / "deseq2.R"
 
     cmd = [
         "Rscript",
         str(rscript),
-        "--Pathid", str(outdir),
+        "--Pathid", str(outpath),
         "--Rawcounts", str(rawcounts),
         "--Normalization", str(normalization),
         "--Treatid", treatment,
         "--Ctrlid", control,
         "--Treatnum", str(treatnum),
         "--Ctrlnum", str(ctrlnum),
-        "--outfile", prefix,
+        "--outfile", outfile,
         "--log2FC", str(log2fc),
         "--padj", str(padj)
     ]
@@ -44,8 +40,8 @@ def run_deseq2(
 
 def run_pipeline(args):
 
-    outdir = Path(args.outdir)
-    outdir.mkdir(parents=True, exist_ok=True)
+    outpath = Path(args.outpath)
+    outpath.mkdir(parents=True, exist_ok=True)
 
     print("================================")
     print(" DiffLoop")
@@ -54,19 +50,15 @@ def run_pipeline(args):
 
     print("\n[1/2] Extracting loop counts")
 
-    run_counting(
-        samples=args.samples,
-        loopfile=args.loops,
-        outdir=outdir,
-        prefix=args.prefix
+    rawcounts, normalization = get_count(
+        inputfile=args.inputfile,
+        loopfile=args.loopfile,
+        outpath=outpath,
+        outfile=args.outfile
     )
 
-    rawcounts = outdir / f"{args.prefix}_rawcounts.txt"
-
-    normalization = (
-        outdir /
-        f"{args.prefix}_normalizationFactor.txt"
-    )
+    print(f"Raw counts: {rawcounts}")
+    print(f"Normalization factors: {normalization}")
 
     print("\n[2/2] Running DESeq2")
 
@@ -77,8 +69,8 @@ def run_pipeline(args):
         control=args.control,
         treatnum=args.treatnum,
         ctrlnum=args.ctrlnum,
-        outdir=outdir,
-        prefix=args.prefix,
+        outpath=outpath,
+        outfile=args.outfile,
         log2fc=args.log2fc,
         padj=args.padj
     )
@@ -96,6 +88,14 @@ def main():
         )
     )
 
+    parser.add_argument(
+        "-V",
+        "--version",
+        action="version",
+        version=f"DiffLoop {__version__}",
+        help="Print version and exit"
+    )
+
     subparsers = parser.add_subparsers(
         dest="command",
         required=True
@@ -107,13 +107,22 @@ def main():
     )
 
     run.add_argument(
-        "--samples",
-        required=True
+        "-i",
+        "--inputfile",
+        dest="inputfile",
+        required=True,
+        help=(
+            "Sample metadata TSV with columns: "
+            "sample, mcool_path, resolution, expected_path"
+        )
     )
 
     run.add_argument(
-        "--loops",
-        required=True
+        "-l",
+        "--loopfile",
+        dest="loopfile",
+        required=True,
+        help="Loop file"
     )
 
     run.add_argument(
@@ -139,19 +148,25 @@ def main():
     )
 
     run.add_argument(
-        "--outdir",
-        required=True
+        "-O",
+        "--outpath",
+        dest="outpath",
+        required=True,
+        help="Output directory"
     )
 
     run.add_argument(
-        "--prefix",
-        required=True
+        "-o",
+        "--outfile",
+        dest="outfile",
+        required=True,
+        help="Output prefix"
     )
 
     run.add_argument(
         "--log2fc",
         type=float,
-        default=1
+        default=1.0
     )
 
     run.add_argument(
@@ -163,7 +178,6 @@ def main():
     run.set_defaults(func=run_pipeline)
 
     args = parser.parse_args()
-
     args.func(args)
 
 
